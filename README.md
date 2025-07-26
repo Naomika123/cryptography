@@ -1,1 +1,1 @@
-Java script for decoding binary, caesar, transposition, and Vigenere ciphers!
+Javascript code for decoding binary, caesar, transposition, and Vigenere ciphers!
