@@ -1,0 +1,159 @@
+import java.util.Scanner;
+import java.lang.Math;
+
+public class App {
+    public static void main(String[] args) {
+       int option = 0;
+       Scanner input = new Scanner(System.in);
+       
+       while(option != 5){
+           System.out.println("\nChoose an option:\n\t1. Binary Decoder\n\t2. Caeser cipher Decoder\n\t3. Transposition cipher Decoder\n\t4. Vigenere cipher Decoder\n\t5. Exit");
+           option = input.nextInt();
+           if(option == 1){
+               System.out.print("Enter your text: ");
+               input.nextLine();
+               String cipherText = input.nextLine();
+               String decoded = binaryDecoder(cipherText);
+               System.out.println("\n\n" + decoded);
+           } else if(option == 2){
+               System.out.println("Enter the key: ");
+               int key = input.nextInt();
+               System.out.println("Enter your text: ");
+               input.nextLine();
+               String cipherText = input.nextLine();
+               String decoded = caeserDecoder(key, cipherText);
+               System.out.println("\n\n" + decoded);
+           } else if(option == 3){
+               System.out.println("Enter the key: ");
+               int key = input.nextInt();
+               System.out.println("Enter your text: ");
+               input.nextLine();
+               String cipherText = input.nextLine();
+               String decoded = transpositionDecoder(key, cipherText);
+               System.out.println("\n\n" + decoded);
+           }else if(option == 4){
+               System.out.println("Enter the key: ");
+                input.nextLine();
+                String key = input.nextLine();
+                System.out.println("Enter your text: ");
+                String cipherText = input.nextLine();
+                String decoded = vigenereDecoder(key, cipherText);
+                System.out.println("\n\n" + decoded);
+            } 
+       }
+    }
+
+    public static String vigenereDecoder(String keyWord, String cipherText){
+        String answer = "";
+        int[] key = new int[keyWord.length()];
+        for(int i=0; i<keyWord.length(); i++){
+            key[i] = (int)keyWord.charAt(i) - 97; 
+            key[i] = 26 - key[i]; 
+        }
+        int keyPosition = 0;
+        for(int i=0; i<cipherText.length(); i++){
+            int n = (int)cipherText.charAt(i);
+            if(96 < n && n < 123){
+                n += key[keyPosition%keyWord.length()];
+                keyPosition++;
+                if(n>122){
+                    n -= 26;
+                }
+            }
+            answer += (char)n;
+        }
+        return answer;
+    }
+
+    public static String transpositionDecoder (int key, String cipherText){
+        String answer = "";
+        int length = cipherText.length()/key;
+        if(cipherText.length()%key != 0){
+            length++;
+        }
+        String[] cipherChart = new String[key];
+        for(int i=0; i<length; i++){
+            cipherText += "**";
+        }
+        for(int i=0; i<key; i++){
+            cipherChart[i] = cipherText.substring(length*i, length*i + length);
+        }
+        for(int i=0; i<length; i++){
+            for(int j=0; j<key; j++){
+                if(cipherChart[j].charAt(i) != '*'){
+                    char n = cipherChart[j].charAt(i);
+                    answer += n;
+                }
+            }
+        }
+        answer = answer.replaceAll("\\|", " ");
+        return answer;
+    }
+
+    public static String caeserDecoder(int key, String cipherText){
+        String answer = "";
+        key %= 26;
+        for(int i=0; i<cipherText.length()-1; i++){
+            int n = (int)cipherText.charAt(i);
+            if(96 < n && n < 123){
+                n += key;
+                if(n > 122){
+                    n -= 26;
+                }
+                answer += (char)n;
+            } else {
+                answer += (char)n;
+            }
+        }
+
+        return answer;
+    }
+    
+    public static String binaryDecoder (String cipherText){
+        String answer = "";
+        while(cipherText.length()>0){
+            if(cipherText.charAt(0) == '|'){
+                //System.out.println("space");
+                answer += ' ';
+                if(cipherText.indexOf(' ') != -1){
+                    cipherText = cipherText.substring(cipherText.indexOf(' ')+1);
+                    cipherText = cipherText.trim();
+                } else {
+                    cipherText = "";
+                }
+            } else if(!(cipherText.charAt(0) == '1' || cipherText.charAt(0) == '0')){
+                //System.out.println("otherchar");
+                answer += cipherText.charAt(0); 
+                if(cipherText.indexOf(' ') != -1){
+                    cipherText = cipherText.substring(cipherText.indexOf(' ')+1);
+                    cipherText = cipherText.trim();
+                } else {
+                    cipherText = "";
+                }
+            } else {
+                //System.out.println("digit");
+                String decode;
+                if(cipherText.indexOf(' ') != -1){
+                    decode = cipherText.substring(0,cipherText.indexOf(' '));
+                    cipherText = cipherText.substring(cipherText.indexOf(' ')+1);
+                    cipherText = cipherText.trim();
+                } else {
+                    decode = cipherText;
+                    cipherText = "";
+                }
+                //System.out.println(decode);
+            int sum = 0;
+            int z=0;
+            for(int i=decode.length()-1; i>-1; i--){
+                int n = -48 + (int)decode.charAt(i);
+                //System.out.println(z);
+                sum += n * Math.pow(2,z);
+                z++;
+            }
+            //System.out.println((sum));
+            answer += (char)(sum+96);
+            }
+        }
+        return answer;
+    }
+}
